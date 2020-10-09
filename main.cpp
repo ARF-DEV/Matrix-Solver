@@ -2,6 +2,32 @@
 
 
 using namespace std;
+//prototype biar fungsi bisa ditaro dibawah int main
+void InputKeyboard2d(int **A, int n, int m);
+int** SetArray2d(int n, int m);
+
+int main()
+{
+    // INI CUMA TEST IMPLEMENTASI FUNGSI
+    int n, m;
+    cin >> n >> m;
+    // n + 1 karena n itu jumlah variable dan hasil dari persamaan blom masuk
+    int **A = SetArray2d(n + 1, m); 
+
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << A[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    
+    
+    
+    
+    
+}
 
 
 void InputKeyboard2d(int **A, int n, int m)
@@ -29,26 +55,3 @@ int** SetArray2d(int n, int m)
     return arr;
 }
 
-
-int main()
-{
-    // INI CUMA TEST IMPLEMENTASI FUNGSI
-    int n, m;
-    cin >> n >> m;
-    // n + 1 karena n itu jumlah variable dan hasil dari persamaan blom masuk
-    int **A = SetArray2d(n + 1, m); 
-
-    for (int i = 0; i < m; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            cout << A[i][j] << ' ';
-        }
-        cout << endl;
-    }
-    
-    
-    
-    
-    
-}

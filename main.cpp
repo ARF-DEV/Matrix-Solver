@@ -54,6 +54,24 @@ void calculateEselonBaris(float **A, int n, int m)
 {
     for (int i = 0; i < m; i++)
     {
+        if (A[i][i] == 0)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                if (A[j][i] != 0)
+                {
+                    SwapRow(A[i], A[j], n);
+                    break;
+                }
+            }
+            
+        }
+    }
+
+    PrintMatriks(A, n, m);
+
+    for (int i = 0; i < m; i++)
+    {
         float pembagi = A[i][i];
         MulRow(A[i], n, 1 / pembagi);
 
@@ -106,3 +124,19 @@ void PrintMatriks(float **A, int n, int m)
         cout << endl;
     }
 }
+
+/*
+
+3 3
+0 1 5 8
+7 8 9 0
+2 10 4 8
+
+3 3
+0 1 2 5
+1 0 2 2
+5 5 0 7
+
+JIKA ADA NILAI DITEMPAT 1 UTAMA YANG BERNILAI 0 MAKA TUKAR DENGAN BARIS LAIN
+
+*/

@@ -150,9 +150,9 @@ float* FindAnswerSPL(float **A, float n, float m)
 void calculateEselonBarisTereduksi(float **A, int n, int m)
 {
     calculateEselonBaris(A, n, m);
-    cout << "\n";
-    PrintMatriks(A, n, m);
-    cout << "\n";
+    
+    
+    
     for (int i = 1; i < m; i++)
     {
         for (int j = 0; j < i; j++)
@@ -160,8 +160,6 @@ void calculateEselonBarisTereduksi(float **A, int n, int m)
             AddRow(A[j], A[i], n, -A[j][i]);
         }
     }
-    
-    PrintMatriks(A, n, m);
     
 }
 /*

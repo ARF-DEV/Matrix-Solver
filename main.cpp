@@ -10,6 +10,8 @@ void AddRow(float *A, float *B, int n, float k);
 void PrintMatriks(float **A, int n, int m);
 void MulRow(float *A, int n, float k);
 void SwapRow(float *A, float *B, int n);
+float* FindAnswerSPL(float **A, float n, float m);
+void calculateEselonBarisTereduksi(float **A, int n, int m);
 
 int main()
 {
@@ -19,9 +21,16 @@ int main()
     // n + 1 karena n itu jumlah variable dan hasil dari persamaan blom masuk
     float **A = SetArray2d(n + 1, m); 
 
-    calculateEselonBaris(A, n + 1, m);
+    calculateEselonBarisTereduksi(A, n + 1, m);
 
-    PrintMatriks(A, n + 1, m);
+
+    float* hasil = FindAnswerSPL(A, n + 1, m);
+    
+    for (int i = 0; i < n; i++)
+    {
+        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
+    }
+
         
 }
 
@@ -67,9 +76,6 @@ void calculateEselonBaris(float **A, int n, int m)
             
         }
     }
-
-    PrintMatriks(A, n, m);
-
     for (int i = 0; i < m; i++)
     {
         float pembagi = A[i][i];
@@ -125,7 +131,45 @@ void PrintMatriks(float **A, int n, int m)
     }
 }
 
+float* FindAnswerSPL(float **A, float n, float m)
+{
+    int p = n - 1; 
+    float* hasil = new float[p];
+    for (int i = p - 1; i >= 0; i--)
+    {
+        hasil[i] = A[i][p];
+        for (int j = i + 1; j < p; j++)
+        {
+            hasil[i] = hasil[i] - (A[i][j] * hasil[j]);    
+        }
+    }
+
+    return hasil;
+}
+
+void calculateEselonBarisTereduksi(float **A, int n, int m)
+{
+    calculateEselonBaris(A, n, m);
+    cout << "\n";
+    PrintMatriks(A, n, m);
+    cout << "\n";
+    for (int i = 1; i < m; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            AddRow(A[j], A[i], n, -A[j][i]);
+        }
+    }
+    
+    PrintMatriks(A, n, m);
+    
+}
 /*
+
+3 3
+2 3 -1 5
+4 4 -3 3
+-2 3 -1 1
 
 3 3
 0 1 5 8

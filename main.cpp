@@ -1,28 +1,26 @@
-#include <iostream>
 #include <fstream>
+#include "lib.h"
 
 using namespace std;
 //prototype biar fungsi bisa ditaro dibawah int main
-void InputKeyboard2d(float **A, int n, int m);
-float** SetArray2d(int n, int m);
-void calculateEselonBaris(float **A, int n, int m);
-void AddRow(float *A, float *B, int n, float k);
-void PrintMatriks(float **A, int n, int m);
-void MulRow(float *A, int n, float k);
-void SwapRow(float *A, float *B, int n);
-float* FindAnswerSPL(float **A, float n, float m);
-void calculateEselonBarisTereduksi(float **A, int n, int m);
-
-int main()
+void SplGauss()
 {
-    // INI CUMA TEST IMPLEMENTASI FUNGSI
     int n, m;
-    cin >> n >> m;
-    // n + 1 karena n itu jumlah variable dan hasil dari persamaan blom masuk
+    cin >> m >> n;
+
     float **A = SetArray2d(n + 1, m); 
 
-    calculateEselonBarisTereduksi(A, n + 1, m);
-
+    int l = calculateEselonBaris(A, n + 1, m);
+    
+    if (l == -1)
+    {
+        cout << "Solusi Banyak\n";
+        return;
+    }
+    else if (l == -2)
+    {
+        cout << "Tidak ada Solusi\n";
+    }
 
     float* hasil = FindAnswerSPL(A, n + 1, m);
     
@@ -30,136 +28,129 @@ int main()
     {
         cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
     }
-
-        
 }
-
-void InputKeyboard2d(float **A, int n, int m)
+void SplGaussJordan()
 {
-    for (int i = 0; i < m; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            cin >> A[i][j];
-        }
-    }   
-}
+    int n, m;
+    cin >> m >> n;
 
-float** SetArray2d(int n, int m)
-{
-    float **arr = new float* [m];
-    for (int i = 0; i < m; i++)
+    float **A = SetArray2d(n + 1, m); 
+
+    int l = calculateEselonBarisTereduksi(A, n + 1, m);
+    
+    if (l == -1)
     {
-        arr[i] = new float[n];
+        cout << "Solusi Banyak\n";
+        return;
+    }
+    else if (l == -2)
+    {
+        cout << "Tidak ada Solusi\n";
     }
 
-    //TODO FILE ATO KEYBOARD
-    InputKeyboard2d(arr, n, m);   
+    float* hasil = FindAnswerSPL(A, n + 1, m);
     
-    return arr;
-}
-
-void calculateEselonBaris(float **A, int n, int m)
-{
-    for (int i = 0; i < m; i++)
-    {
-        if (A[i][i] == 0)
-        {
-            for (int j = 0; j < m; j++)
-            {
-                if (A[j][i] != 0)
-                {
-                    SwapRow(A[i], A[j], n);
-                    break;
-                }
-            }
-            
-        }
-    }
-    for (int i = 0; i < m; i++)
-    {
-        float pembagi = A[i][i];
-        MulRow(A[i], n, 1 / pembagi);
-
-        for (int j = i + 1; j < m; j++)
-        {
-            float pengurang = A[j][i];
-            AddRow(A[j], A[i], n, -pengurang);
-        }
-        
-        
-    }
-    
-              
-    
-    
-}
-
-void AddRow(float *A, float *B, int n, float k)
-{
     for (int i = 0; i < n; i++)
     {
-        A[i] += k * B[i];
+        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
     }
-    
 }
-void MulRow(float *A, int n, float k)
+void SplMatriksBalikan()
 {
+    int n, m;
+    cin >> m >> n;
+    
+    float **A = SetArray2d(n + 1, m);
+    int out;
+    float det = Determinan(A, n, m, &out);
+
+    if (out == -1)
+    {
+        cout << "ERROR : det = 0\n";
+        return;
+    }
+    float *hasil = MetodeMatriksBalikan(A, n + 1, m);
     for (int i = 0; i < n; i++)
     {
-        A[i] *= k;
+        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
     }
+}
+void Invers()
+{
+    int n, m;
+    cin >> m >> n;
+
+    float **A = SetArray2d(n, m);
+
+    float **B = inversMatriks(A, n, m);
+
+    PrintMatriks(B, n, m);
+}
+void Det()
+{
+    int n, m;
+    cin >> m >> n;
+    
+    float **A = SetArray2d(n, m);
+    int flag = 0;
+    float P = Determinan(A, n, m, &flag);
+
+    if (flag == -1)
+    {
+        cout << "Determinan harus berupa matriks N x N" << endl;
+        return;
+    }
+    cout << P << endl;
 }
 
-void SwapRow(float *A, float *B, int n)
-{
-    for (int i = 0; i < n; i++)
+int main()
+{    
+    int p;
+    cout << "MENU" << endl;
+    cout << "1.\tSistem Persamaan Linier" << endl;
+    cout << "2.\tDeterminan" << endl;
+    cout << "3.\tMatriks Balikan " << endl;
+    cout << "4.\tKeluar" << endl;
+    cout << "N = "; cin >> p;
+
+    switch (p)
     {
-        swap(A[i], B[i]);
-    }
-    
-}
-void PrintMatriks(float **A, int n, int m)
-{
-    for (int i = 0; i < m; i++)
-    {
-        for (int j = 0; j < n; j++)
+    case 1:
+        int k;
+        cout << "1.\tEliminasi Gauss\n";
+        cout << "2.\tEliminasi Gauss-Jordan\n";
+        cout << "3.\tMatriks Balikan\n";
+        cout << "4.\tKaidah Cramer\n";
+        cin >> k;
+        switch (k)
         {
-            cout << A[i][j] << "\t";
+            case 1:
+                SplGauss();
+                break;
+            case 2:
+                SplGaussJordan();
+                break;
+            case 3:
+                SplMatriksBalikan();
+                break;
+            case 4:
+                //Cramer
+                break;
         }
-        cout << endl;
+        break;
+    case 2:
+        Det();
+        break;
+    case 3:
+        Invers();
+        break;
+    case 4:
+        return 0;
+        break;
     }
-}
-
-float* FindAnswerSPL(float **A, float n, float m)
-{
-    int p = n - 1; 
-    float* hasil = new float[p];
-    for (int i = p - 1; i >= 0; i--)
-    {
-        hasil[i] = A[i][p];
-        for (int j = i + 1; j < p; j++)
-        {
-            hasil[i] = hasil[i] - (A[i][j] * hasil[j]);    
-        }
-    }
-
-    return hasil;
-}
-
-void calculateEselonBarisTereduksi(float **A, int n, int m)
-{
-    calculateEselonBaris(A, n, m);
+    // INI CUMA TEST IMPLEMENTASI FUNGSI
     
     
-    
-    for (int i = 1; i < m; i++)
-    {
-        for (int j = 0; j < i; j++)
-        {
-            AddRow(A[j], A[i], n, -A[j][i]);
-        }
-    }
     
 }
 /*

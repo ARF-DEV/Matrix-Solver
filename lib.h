@@ -82,6 +82,7 @@ float **FileArray2d(int* n, int* m)
     PrintMatriks(A, *n, *m);
     
     
+    file.close();
     //TODO BUAT 2D MATRIKS NYA BELOM
 
     return A;
@@ -89,7 +90,7 @@ float **FileArray2d(int* n, int* m)
 
 }
 
-float **SetMatriks(int* n, int* m, int offset = 0)
+float **SetMatriks(int* n, int* m, int offset, int *flag)
 {
     int p;
     float **A;
@@ -102,10 +103,12 @@ float **SetMatriks(int* n, int* m, int offset = 0)
         cin >> *m >> *n;
         *n += offset;
         A = SetArray2d(*n, *m);
+        *flag = 0;
     }
     else if (p == 2)
     {
         A = FileArray2d(n, m);
+        *flag = 1;
     }
     return A;
 }
@@ -220,6 +223,19 @@ void PrintMatriks(float **A, int n, int m)
         cout << endl;
     }
 }
+void PrintMatriksToFile(float **A, int n, int m, string filename)
+{
+    ofstream file(filename);
+    for (int i = 0; i < m; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            file << A[i][j] <<' ';
+        }
+        file << endl;
+    }
+    file.close();
+}
 
 float* FindAnswerSPL(float **A, float n, float m)
 {
@@ -303,7 +319,7 @@ float** inversMatriks(float **A, int n, int m)
         
     }
     
-    cout << endl;
+    //cout << endl;
     //PrintMatriks(inv, n, m);
     
     return inv;
@@ -486,7 +502,8 @@ void SplGauss()
 {
     int n, m;
 
-    float **A = SetMatriks(&n, &m, 1); 
+    int flag;
+    float **A = SetMatriks(&n, &m, 1, &flag);
 
     int l = calculateEselonBaris(A, n, m);
     
@@ -502,9 +519,21 @@ void SplGauss()
 
     float* hasil = FindAnswerSPL(A, n, m);
     
-    for (int i = 0; i < m; i++)
+    if (flag == 1)
     {
-        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
+        ofstream file("output.txt");
+        for (int i = 0; i < m; i++)
+        {
+            file << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+        file.close();
+    }
+    else
+    {
+        for (int i = 0; i < m; i++)
+        {
+            cout << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
     }
 }
 void SplGaussJordan()
@@ -512,7 +541,8 @@ void SplGaussJordan()
     int n, m;
     //cin >> m >> n;
 
-    float **A = SetMatriks(&n, &m, 1); 
+    int flag;
+    float **A = SetMatriks(&n, &m, 1, &flag);
 
     int l = calculateEselonBarisTereduksi(A, n, m);
     
@@ -528,9 +558,21 @@ void SplGaussJordan()
 
     float* hasil = FindAnswerSPL(A, n, m);
     
-    for (int i = 0; i < m; i++)
+    if (flag == 1)
     {
-        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
+        ofstream file("output.txt");
+        for (int i = 0; i < m; i++)
+        {
+            file << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+        file.close();
+    }
+    else
+    {
+        for (int i = 0; i < m; i++)
+        {
+            cout << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
     }
 }
 void SplMatriksBalikan()
@@ -538,8 +580,8 @@ void SplMatriksBalikan()
     int n, m;
     // cin >> m >> n;
     
-    // float **A = SetArray2d(n + 1, m);
-    float **A = SetMatriks(&n, &m, 1);
+    int flag;
+    float **A = SetMatriks(&n, &m, 1, &flag);
     
     //PrintMatriks(A, n, m);
     int out;
@@ -550,69 +592,130 @@ void SplMatriksBalikan()
         cout << "ERROR : det = 0\n";
         return;
     }
+
     float *hasil = MetodeMatriksBalikan(A, n, m);
-    for (int i = 0; i < m; i++)
+    if (flag == 1)
     {
-        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
+        ofstream file("output.txt");
+        for (int i = 0; i < m; i++)
+        {
+            file << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+        file.close();
     }
+    else
+    {
+        for (int i = 0; i < m; i++)
+        {
+            cout << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+    }
+
 }
 void Invers()
 {
     int n, m;
     
 
-    float **A = SetMatriks(&n, &m);
+    int flag;
+    float **A = SetMatriks(&n, &m, 0, &flag);
 
     float **B = inversMatriks(A, n, m);
-    cout << "invers :" << endl;
-    PrintMatriks(B, n, m);
+    if (flag == 1)
+    {
+        PrintMatriksToFile(B, n, m, "output.txt");
+    }
+    else
+    {
+        cout << "invers :" << endl;
+        PrintMatriks(B, n, m);
+    }
+    
+    
 }
 void DetReduksiBaris()
 {
     int n, m;
-    
-    float **A = SetMatriks(&n, &m);
+    int flag;
+    float **A = SetMatriks(&n, &m, 0, &flag);
     //PrintMatriks(A, n, m);
-    int flag = 0;
-    float P = Determinan(A, n, m, &flag);
+    int out = 0;
+    float P = Determinan(A, n, m, &out);
 
-    if (flag == -1)
+    if (out == -1)
     {
         cout << "Determinan harus berupa matriks N x N" << endl;
         return;
     }
-    cout <<"Det = "<< P << endl;
+    if (flag == 1)
+    {
+        ofstream file("output.txt");
+        file <<"Det = "<< P << endl;
+        file.clear();
+    }
+    else
+    {
+        cout <<"Det = "<< P << endl;
+    }
+    
+    
 }
 void DetEkspansiKofaktor()
 {
     int n, m;
-    //cin >> m >> n;
-    float **A = SetMatriks(&n, &m);
+    int flag;
+    float **A = SetMatriks(&n, &m, 0, &flag);
     if (n != m)
     {
         cout << "ERROR : Matriks Harus Matriks NxN" << endl;
     }
     
-    // cin >> baris >> kolom;
-    float b = EkspansiKofaktor(A, n);
+    
 
-    cout <<"Det = "<< b << endl;
+    // cin >> baris >> kolom;
+    float P = EkspansiKofaktor(A, n);
+    if (flag == 1)
+    {
+        ofstream file("output.txt");
+        file <<"Det = "<< P << endl;
+        file.clear();
+    }
+    else
+    {
+        cout <<"Det = "<< P << endl;
+    }
+    //cout <<"Det = "<< b << endl;
 }
 void SplCramer()
 {
     int n, m;
     //cin >> m >> n;
     int out;
-    float **A = SetMatriks(&n, &m, 1);
+    int flag;
+    float **A = SetMatriks(&n, &m, 1, &flag);
     float *hasil = Cramer(A, n, m, &out);
     if (out == -1)
     {
         cout << "ERROR : Solusi Tidak dapat ditemukan (Det == 0)" << endl;
         return;
     }
-    for (int i = 0; i < m; i++)
+    if (flag == 1)
     {
-        cout << "x[" << i + 1 << "] = " << hasil[i] << endl; 
+        ofstream file("output.txt");
+        for (int i = 0; i < m; i++)
+        {
+            file << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+        file.close();
     }
+    else
+    {
+        for (int i = 0; i < m; i++)
+        {
+            cout << "x[" << i + 1 << "] = " << hasil[i] << endl;
+        }
+    }
+    
+    
 }
 
